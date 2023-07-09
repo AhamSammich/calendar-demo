@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:server": "concurrently \"vite\" \"cd ../server & yarn dev\"",
     "build": "vite build",
     "preview": "vite preview"
   },

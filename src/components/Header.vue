@@ -30,11 +30,6 @@ header {
     max-height: 2rem;
 }
 
-h1 {
-    text-align: left;
-    margin-left: 1rem;
-}
-
 header>div {
     display: flex;
     justify-content: space-between;

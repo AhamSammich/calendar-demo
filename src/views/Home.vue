@@ -27,7 +27,7 @@ const auth = useAuthStore();
 const events = ref(null);
 
 const getEvents = () => {
-    fetch("https://calendar-api-6rcdoyqdaq-uc.a.run.app/api/events", {
+    fetch("/api/events", {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${auth.token}`,

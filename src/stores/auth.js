@@ -13,19 +13,26 @@ export const useAuthStore = defineStore("auth", {
   },
   actions: {
     async loginUser(credentials) {
-      const response = await fetch("https://calendar-api-6rcdoyqdaq-uc.a.run.app/api/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credentials),
-      });
-      if (response.ok) {
-        this.currentUser = await response.json();
-        this.loggedIn = true;
-        console.log(`Logged in as ${this.username}.`)
+      try {
+        const response = await fetch("/api/users/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(credentials),
+        });
+        if (response.ok) {
+          this.currentUser = await response.json();
+          this.loggedIn = true;
+          console.log(`Logged in as ${this.username}.`)
+        } else {
+          throw Error("Unable to login. Please try again later.")
+        }
+        return { user: this.currentUser };
+      } catch (err) {
+        console.log(err);
+        return { error: err.message };
       }
-      return this.currentUser;
     },
     logoutUser() {
         // return variables in state() to initial values

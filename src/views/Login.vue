@@ -12,11 +12,12 @@
             </div>
             <button type="submit">Login</button>
         </form>
+        <div v-if="errorOnSubmit" class="error">{{ errorOnSubmit }}</div>
     </div>
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 
@@ -28,12 +29,15 @@ const credentials = reactive({
     password: "",
 });
 
+const errorOnSubmit = ref(false);
+
 const goToHome = () => {
     router.push('/');
 }
 
 const handleSubmit = async () => {
-    const user = await auth.loginUser(credentials);
+    const {user, error } = await auth.loginUser(credentials);
+    if (error) errorOnSubmit.value = error;
     if (user) goToHome();
 }
 
@@ -41,16 +45,27 @@ const handleSubmit = async () => {
 
 <style scoped>
 div:has(input) {
-    width: 100%;
     height: 5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
+    padding: 0 2rem;
+}
+
+label {
+    display: block;
+    text-align: left;
+    margin-bottom: 0.2rem;
 }
 
 input {
     font-size: larger;
     padding: 0.5rem 1rem;
+}
+
+.error {
+    position: absolute;
+    bottom: 2rem;
+    padding: 2rem;
+    border: 1px solid red;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 0.2rem palevioletred;
 }
 </style>
