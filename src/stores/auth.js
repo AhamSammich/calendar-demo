@@ -34,6 +34,28 @@ export const useAuthStore = defineStore("auth", {
         return { error: err.message };
       }
     },
+    async signupUser(credentials) {
+      try {
+        const response = await fetch("/api/users/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(credentials),
+        });
+        if (response.ok) {
+          // this.currentUser = await response.json();
+          // this.loggedIn = true;
+          console.log(`Successfully registered as ${this.username}.`)
+        } else {
+          throw Error("Unable to register. Please try again later.")
+        }
+        return { user: this.currentUser };
+      } catch (err) {
+        console.log(err);
+        return { error: err.message };
+      }
+    },
     logoutUser() {
         // return variables in state() to initial values
         this.$reset();

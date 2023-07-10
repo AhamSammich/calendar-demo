@@ -23,20 +23,6 @@ const logout = () => {
 
 <style scoped>
 header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    max-height: 2rem;
-}
-
-header>div {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem;
-}
-
-nav {
-    justify-self: flex-end;
+    height: max-content;
 }
 </style>
