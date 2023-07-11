@@ -10,6 +10,16 @@ export const useAuthStore = defineStore("auth", {
     userId: (state) => state.currentUser?._id,
     username: (state) => state.currentUser?.username,
     token: (state) => state.currentUser?.token,
+    usernameExists: (state) => async (username) => {
+      try {
+        const response = await fetch(`/api/users/${username}`);
+        const { user } = await response.json();
+        return user;
+      } catch (err) {
+        console.log(err);
+        return { error: err.message };
+      }
+    }
   },
   actions: {
     async loginUser(credentials) {
@@ -44,15 +54,15 @@ export const useAuthStore = defineStore("auth", {
           body: JSON.stringify(credentials),
         });
         if (response.ok) {
-          // this.currentUser = await response.json();
-          // this.loggedIn = true;
+          this.currentUser = await response.json();
+          this.loggedIn = true;
           console.log(`Successfully registered as ${this.username}.`)
         } else {
-          throw Error("Unable to register. Please try again later.")
+          const json = await response.json();
+          return json;
         }
         return { user: this.currentUser };
       } catch (err) {
-        console.log(err);
         return { error: err.message };
       }
     },
