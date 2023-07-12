@@ -1,17 +1,5 @@
 <template>
   <div class="root">
-    <!-- <form v-else @submit.prevent="handleSubmit">
-            <div>
-                <label for="login-username">Username</label>
-                <input v-model="credentials.username" id="login-username" type="text" autocomplete="username" required>
-            </div>
-            <div>
-                <label for="login-password">Password</label>
-                <input v-model="credentials.password" id="login-password"
-                    type="password" autocomplete="current-password" required>
-            </div>
-            <button type="submit" :disabled="passwordMismatch">login</button>
-        </form> -->
     <van-form @submit="handleSubmit">
       <van-cell-group inset class="field-group">
         <van-field
@@ -94,22 +82,6 @@ onBeforeMount(() => {
 </script>
 
 <style scoped>
-/* div:has(input) {
-  height: 5rem;
-  padding: 0 2rem;
-} */
-
-/* label {
-  display: block;
-  text-align: left;
-  margin-bottom: 0.2rem;
-} */
-
-/* input {
-  font-size: larger;
-  padding: 0.5rem 1rem;
-} */
-
 .notification {
   width: max-content;
   height: max-content;
@@ -125,12 +97,9 @@ onBeforeMount(() => {
 .success {
   border: 1px solid springgreen;
   box-shadow: 0 0 0.2rem palegreen;
-  /* inset: 0;
-    margin: auto; */
 }
 
 .error {
   border: 1px solid red;
-  /* box-shadow: 0 0 0.2rem palevioletred; */
 }
 </style>

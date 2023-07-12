@@ -4,23 +4,6 @@
       <h2>Hello {{ credentials.username }}!</h2>
       <p>Thank you for registering!</p>
     </div>
-    <!-- <form v-else @submit.prevent="handleSubmit">
-            <div>
-                <label for="signup-username">Username</label>
-                <input v-model="credentials.username" id="signup-username" type="text" autocomplete="username" required>
-            </div>
-            <div>
-                <label for="signup-password">Password</label>
-                <input v-model="credentials.password" id="signup-password" :class="{ error: passwordMismatch }"
-                    type="password" autocomplete="new-password" required>
-            </div>
-            <div>
-                <label for="signup-confirm-password">Confirm Password</label>
-                <input v-model="credentials.confirmPassword" id="signup-confirm-password"
-                    :class="{ error: passwordMismatch }" type="password" autocomplete="new-password" required>
-            </div>
-            <button type="submit" :disabled="passwordMismatch">Signup</button>
-        </form> -->
     <van-form v-else @submit="handleSubmit">
       <van-cell-group inset class="field-group">
         <van-field
@@ -178,22 +161,6 @@ onBeforeMount(() => {
 </script>
 
 <style scoped>
-/* div:has(input) {
-  height: 5rem;
-  padding: 0 2rem;
-} */
-
-/* label {
-  display: block;
-  text-align: left;
-  margin-bottom: 0.2rem;
-} */
-
-/* input {
-  font-size: larger;
-  padding: 0.5rem 1rem;
-} */
-
 .notification {
   width: max-content;
   height: max-content;
@@ -209,12 +176,9 @@ onBeforeMount(() => {
 .success {
   border: 1px solid springgreen;
   box-shadow: 0 0 0.2rem palegreen;
-  /* inset: 0;
-    margin: auto; */
 }
 
 .error {
   border: 1px solid red;
-  /* box-shadow: 0 0 0.2rem palevioletred; */
 }
 </style>

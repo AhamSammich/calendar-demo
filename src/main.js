@@ -1,5 +1,10 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
+import { Locale } from 'vant';
+import enUS from 'vant/es/locale/lang/en-US';
+
+// Set language
+Locale.use('en-US', enUS);
 
 // Import Vant components
 import { 
@@ -8,7 +13,9 @@ import {
     Loading,
     Form,
     Field,
+    Cell,
     CellGroup,
+    Popup,
     PickerGroup,
     TimePicker,
     Calendar,
@@ -35,7 +42,9 @@ app.use(Toast);
 app.use(Loading);
 app.use(Form);
 app.use(Field);
+app.use(Cell);
 app.use(CellGroup);
+app.use(Popup);
 app.use(PickerGroup);
 app.use(TimePicker);
 app.use(Calendar);

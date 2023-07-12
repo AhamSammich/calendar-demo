@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h2>Events List</h2>
     <van-loading v-if="events === null" />
     <p v-else-if="events.length === 0">No events</p>
     <ul v-else class="event-list">
@@ -9,7 +8,7 @@
         :key="ev._id"
         :style="{ animationDelay: `${index * 200}ms` }"
       >
-        <h3>{{ ev.eventName }}</h3>
+        <h2>{{ ev.eventName }}</h2>
         <p>{{ ev.description }}</p>
         <p>
           {{ ev.startDate }}
@@ -17,6 +16,22 @@
         </p>
       </li>
     </ul>
+    <van-button
+      type="primary"
+      icon="plus"
+      size="large"
+      @click="() => (showForm = true)"
+    ></van-button>
+    <van-popup
+      v-model:show="showForm"
+      position="bottom"
+      closeable
+      :style="{ padding: '2rem', minHeight: '100vh' }"
+      @closed="() => (showForm = false)"
+    >
+      <h2>Add Event</h2>
+      <AddEvent @event-added="handleAdd" />
+    </van-popup>
   </div>
 </template>
 
@@ -25,10 +40,12 @@ import { onMounted, ref, watchEffect } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
 import { showLoadingToast, showNotify, closeNotify } from "vant";
 import { useAuthStore } from "../stores/auth";
+import AddEvent from "../components/AddEvent.vue";
 
 const router = useRouter();
 const auth = useAuthStore();
 const events = ref(null);
+const showForm = ref(false);
 
 const getEvents = async () => {
   try {
@@ -64,6 +81,11 @@ const goToLogin = () => {
   router.push("/login");
 };
 
+const handleAdd = () => {
+  getEvents();
+  showForm.value = false;
+};
+
 onMounted(() => {
   watchEffect(() => {
     if (auth.loggedIn) {
@@ -88,15 +110,29 @@ onBeforeRouteLeave(() => {
 .event-list {
   list-style-type: none;
   text-align: left;
+  max-height: 65vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .event-list li {
+  margin: 0.5rem 2rem;
   padding: 1rem 2rem;
   border-radius: 0.5rem;
-  border: 1px solid white;
+  border: 1px solid black;
   transform: translateY(100%);
   opacity: 0;
   animation: slideUp 500ms ease-out forwards;
+}
+
+button {
+  position: absolute;
+  bottom: 2rem;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: max-content;
+  padding: 1rem;
 }
 
 @keyframes slideUp {

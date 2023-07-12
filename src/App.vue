@@ -10,18 +10,20 @@ import Header from "./components/Header.vue";
 <style>
 :root:root {
   --van-cell-group-inset-radius: 0.25rem;
+  --van-cell-radius: 0.25rem;
   --van-cell-group-inset-padding: 1rem;
   --van-cell-vertical-padding: 1rem;
   --van-cell-horizontal-padding: 1.5rem;
   --van-cell-font-size: large;
   --van-cell-border-color: slategray;
-  --van-cell-background: transparent;
+  /* --van-cell-background: transparent; */
 }
 
 form {
   position: absolute;
   inset: 0;
   width: max-content;
+  max-width: 40ch;
   height: max-content;
   margin: auto;
   display: flex;
@@ -30,7 +32,8 @@ form {
 }
 
 button {
-  margin: 0 2rem;
+  width: calc(100% - 2rem);
+  align-self: center;
   font-weight: bold;
   font-size: large;
   border-radius: 0.25rem;
