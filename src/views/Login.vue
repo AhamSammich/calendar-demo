@@ -1,5 +1,6 @@
 <template>
   <div class="root">
+    <Header />
     <van-form @submit="handleSubmit">
       <van-cell-group inset class="field-group">
         <van-field
@@ -44,6 +45,7 @@ import { reactive, ref, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 import { showLoadingToast } from "vant";
+import Header from "../components/Header.vue";
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -82,6 +84,9 @@ onBeforeMount(() => {
 </script>
 
 <style scoped>
+.root {
+  padding: 2rem 0;
+}
 .notification {
   width: max-content;
   height: max-content;
@@ -101,5 +106,23 @@ onBeforeMount(() => {
 
 .error {
   border: 1px solid red;
+}
+
+@media (orientation: landscape) {
+  .root {
+    display: grid;
+    grid-template-columns: 40% 1fr;
+  }
+
+  .root header {
+    display: grid;
+    height: 100%;
+    place-content: center;
+    /* padding-left: 2rem; */
+  }
+
+  .root form {
+    position: static;
+  }
 }
 </style>

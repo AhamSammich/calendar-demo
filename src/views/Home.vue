@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Header />
     <van-loading v-if="events === null" />
     <p v-else-if="events.length === 0">No events</p>
     <ul v-else class="event-list">
@@ -11,8 +12,10 @@
         <h2>{{ ev.eventName }}</h2>
         <p>{{ ev.description }}</p>
         <p>
-          {{ ev.startDate }}
-          <span v-if="ev.endDate != ev.startDate"> to {{ ev.endDate }}</span>
+          {{ format(new Date(ev.startDate), "M/dd/yy HH:mm") }}
+          <span v-if="ev.endDate != ev.startDate">
+            to {{ format(new Date(ev.endDate), "M/dd/yy HH:mm") }}</span
+          >
         </p>
       </li>
     </ul>
@@ -24,9 +27,10 @@
     ></van-button>
     <van-popup
       v-model:show="showForm"
-      position="bottom"
+      :position="popupPosition"
       closeable
-      :style="{ padding: '2rem', minHeight: '100vh' }"
+      round
+      :style="popupStyle"
       @closed="() => (showForm = false)"
     >
       <h2>Add Event</h2>
@@ -36,16 +40,32 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watchEffect } from "vue";
+import { onMounted, ref, watchEffect, computed } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
+import { useScreenOrientation } from "@vueuse/core";
+import { format } from "date-fns";
 import { showLoadingToast, showNotify, closeNotify } from "vant";
 import { useAuthStore } from "../stores/auth";
+import Header from "../components/Header.vue";
 import AddEvent from "../components/AddEvent.vue";
 
 const router = useRouter();
 const auth = useAuthStore();
+const { orientation } = useScreenOrientation();
+const isLandscape = () => /landscape/.test(orientation.value);
+
 const events = ref(null);
 const showForm = ref(false);
+
+const popupPosition = computed(() => (isLandscape() ? "right" : "bottom"));
+const popupStyle = computed(() => {
+  return {
+    height: isLandscape() ? "100%" : "90%",
+    width: isLandscape() ? "90%" : "100%",
+    maxWidth: isLandscape() ? "640px" : "100%",
+    padding: "1rem 2rem",
+  };
+});
 
 const getEvents = async () => {
   try {
@@ -87,6 +107,7 @@ const handleAdd = () => {
 };
 
 onMounted(() => {
+  // screen.update();
   watchEffect(() => {
     if (auth.loggedIn) {
       getEvents();
@@ -131,7 +152,7 @@ button {
   left: 0;
   right: 0;
   margin: 0 auto;
-  width: max-content;
+  width: 20%;
   padding: 1rem;
 }
 
