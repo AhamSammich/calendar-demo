@@ -88,6 +88,7 @@ const getEvents = async () => {
         message: error,
         duration: 0,
       });
+      auth.logoutUser();
     }
   } catch (err) {
     showNotify({

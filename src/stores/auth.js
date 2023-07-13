@@ -1,12 +1,15 @@
 import { defineStore } from "pinia";
+import { useStorage } from "@vueuse/core";
+
+const STORE_NAME = "cal-auth";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     // Reset to these initial values when user is logged out 
-    currentUser: null,
-    loggedIn: false,
+    currentUser: useStorage(STORE_NAME, {}, localStorage, {mergeDefaults: true}),
   }),
   getters: {
+    loggedIn: (state) => !!state.currentUser.token,
     userId: (state) => state.currentUser?._id,
     username: (state) => state.currentUser?.username,
     token: (state) => state.currentUser?.token,
@@ -32,8 +35,8 @@ export const useAuthStore = defineStore("auth", {
           body: JSON.stringify(credentials),
         });
         if (response.ok) {
-          this.currentUser = await response.json();
-          this.loggedIn = true;
+          const user = await response.json();
+          this.currentUser = { ...user };
           console.log(`Logged in as ${this.username}.`)
         } else {
           throw Error("Unable to login. Please try again later.")
@@ -54,8 +57,8 @@ export const useAuthStore = defineStore("auth", {
           body: JSON.stringify(credentials),
         });
         if (response.ok) {
-          this.currentUser = await response.json();
-          this.loggedIn = true;
+          const user = await response.json();
+          this.currentUser = { ...user };
           console.log(`Successfully registered as ${this.username}.`)
         } else {
           const json = await response.json();
@@ -67,8 +70,7 @@ export const useAuthStore = defineStore("auth", {
       }
     },
     logoutUser() {
-        // return variables in state() to initial values
-        this.$reset();
+        this.currentUser = {};
         console.log('Logged out.');
     }
   },
