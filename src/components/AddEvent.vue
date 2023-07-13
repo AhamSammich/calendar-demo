@@ -94,7 +94,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted } from "vue";
+import { reactive, ref, computed } from "vue";
 import { format } from "date-fns";
 import { useScreenOrientation, useNow } from "@vueuse/core";
 import { showSuccessToast, showConfirmDialog } from "vant";
@@ -109,8 +109,8 @@ const isLandscape = () => /landscape/.test(orientation.value);
 const popupPosition = computed(() => (isLandscape() ? "right" : "bottom"));
 const popupStyle = computed(() => {
   return {
-    height: isLandscape() ? "100%" : "90%",
-    width: isLandscape() ? "max-width" : "100%",
+    height: isLandscape() ? "100%" : "max-content",
+    width: isLandscape() ? "max-content" : "100%",
   };
 });
 
