@@ -25,26 +25,24 @@
         <!-- Use a calendar as datepicker -->
         <van-cell
           title="Select Date Range"
-          title-style="text-align: left"
+          title-style="text-align: left; color: var(--van-primary-color);"
           is-link
           :value="dateRange"
           @click="showCalendar = true"
         />
-        <div class="date-picker">
-          <van-calendar
-            v-model:show="showCalendar"
-            :show-title="false"
-            :show-confirm="false"
-            type="range"
-            :allow-same-day="true"
-            :position="popupPosition"
-            @confirm="onDateConfirm"
-          />
-        </div>
+        <van-calendar
+          v-model:show="showCalendar"
+          :show-title="false"
+          :show-confirm="false"
+          type="range"
+          :allow-same-day="true"
+          :position="popupPosition"
+          @confirm="onDateConfirm"
+        />
         <!-- Time Range -->
         <van-cell
           title="Start Time"
-          title-style="text-align: left"
+          title-style="text-align: left; color: var(--van-primary-color);"
           is-link
           :value="format(newEvent.startDate, 'HH:mm')"
           @click="() => (showStartTime = true)"
@@ -66,7 +64,7 @@
         </van-popup>
         <van-cell
           title="End Time"
-          title-style="text-align: left"
+          title-style="text-align: left; color: var(--van-primary-color);"
           is-link
           :value="format(newEvent.endDate, 'HH:mm')"
           @click="() => (showEndTime = true)"
@@ -93,24 +91,25 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="js">
 import { reactive, ref, computed } from "vue";
 import { format } from "date-fns";
-import { useScreenOrientation, useNow } from "@vueuse/core";
+import { useScreen } from "../composables/useScreen";
 import { showSuccessToast, showConfirmDialog } from "vant";
 import { useAuthStore } from "../stores/auth";
 
-const emits = defineEmits(["event-added"]);
+const props = defineProps(["eventName", "description", "startDate", "endDate", "_id"]);
+const emits = defineEmits(["event-saved"]);
 
 const auth = useAuthStore();
-const { orientation } = useScreenOrientation();
-const isLandscape = () => /landscape/.test(orientation.value);
+const {isLandscape} = useScreen();
 
-const popupPosition = computed(() => (isLandscape() ? "right" : "bottom"));
+
+const popupPosition = computed(() => (isLandscape.value ? "right" : "bottom"));
 const popupStyle = computed(() => {
   return {
-    height: isLandscape() ? "100%" : "max-content",
-    width: isLandscape() ? "max-content" : "100%",
+    height: isLandscape.value ? "100%" : "max-content",
+    width: isLandscape.value ? "max-content" : "100%",
   };
 });
 
@@ -119,42 +118,55 @@ const showStartTime = ref(false);
 const showEndTime = ref(false);
 
 const now = new Date();
+const propsStartDate = props.startDate ? new Date(props.startDate) : undefined;
+const propsEndDate = props.endDate ? new Date(props.endDate) : undefined;
+
+
+const newEvent = reactive({
+  eventName:    props.eventName || "",
+  description:  props.description || "",
+  startDate:    propsStartDate || now,
+  endDate:      propsEndDate || now,
+});
+// const allDay = computed(() => newEvent.startDate? as )
+
 now.setSeconds(0, 0);
 const plusHour = (h) => (Number(h) < 24 ? (Number(h) + 1) % 24 : h);
 const getInitialTime = () => [now.getHours(), "00"];
 const getInitialDate = () =>
-  `${format(useNow().value, "M/dd")} - ${format(useNow().value, "M/dd")}`;
+`${format(propsStartDate || now, "M/dd")} - ${format(propsEndDate || now, "M/dd")}`;
 
 const dateRange = ref(getInitialDate());
 const startTime = ref(getInitialTime());
 const endTime = ref([plusHour(getInitialTime()[0]), getInitialTime()[1]]);
 
-const newEvent = reactive({
-  eventName: "",
-  description: "",
-  startDate: new Date(),
-  endDate: new Date(),
-});
-newEvent.startDate.setHours(...startTime.value, 0, 0);
-newEvent.endDate.setHours(...endTime.value, 0, 0);
+if (!props.startDate) {
+  newEvent.startDate.setHours(...startTime.value, 0, 0);
+  newEvent.endDate.setHours(...endTime.value, 0, 0);
+}
 
 const resetForm = () => {
   dateRange.value = getInitialDate();
   startTime.value = getInitialTime();
   endTime.value = [plusHour(getInitialTime()[0]), getInitialTime()[1]];
 
-  newEvent.eventName = "";
-  newEvent.description = "";
-  newEvent.startDate = new Date().setHours(...getInitialTime(), 0);
-  newEvent.endDate = new Date().setHours(...getInitialTime(), 0);
+  newEvent.eventName   = props.eventName || "";
+  newEvent.description = props.description || "";
+  newEvent.startDate   = propsStartDate || now;
+  newEvent.endDate     = propsEndDate || now;
 };
 
-const validateTime = (start, end) => {
-  console.log("Validating: ", { start, end, result: start > end });
-  if (start > end) {
-    return false;
-  }
-  return true;
+function validateTime(
+  start,
+  end,
+  options = { validIf: undefined, ifInvalid: undefined }
+) {
+  const { validIf, ifInvalid } = options;
+  const validCondition = validIf || end >= start;
+  if (validCondition) return true;
+
+  ifInvalid?.();
+  return false;
 };
 
 const onDateConfirm = (values) => {
@@ -212,23 +224,30 @@ const onEndTimeCancel = () => {
   showEndTime.value = false;
 };
 
-const handleSubmit = async () => {
-  try {
-    const response = await fetch("/api/events", {
-      method: "POST",
+const createRequest = () => {
+  const url = `/api/events/${props._id || ""}`;
+  const method = props._id ? "PATCH" : "POST";
+  const options = {
+      method,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${auth.token}`,
       },
       body: JSON.stringify(newEvent),
-    });
+    };
+  return [url, options];
+}
+
+const handleSubmit = async () => {
+  try {
+    const response = await fetch(...createRequest());
 
     if (response.ok) {
       showSuccessToast({
         message: "Event Saved",
         wordBreak: "normal",
       });
-      emits("event-added");
+      emits("event-saved");
       resetForm();
     }
   } catch (err) {
@@ -239,7 +258,6 @@ const handleSubmit = async () => {
 
 <style scoped>
 .root form {
-  max-width: 100%;
   height: 500px;
 }
 
@@ -253,11 +271,12 @@ const handleSubmit = async () => {
   color: black;
 }
 
-@media (orientation: landscape) {
+@media (orientation: landscape) and (height < 720px) {
   .root form {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    height: 300px;
+    max-height: 300px;
+    max-width: 600px;
   }
 
   .root form > div {

@@ -10,6 +10,8 @@ import Header from "./components/Header.vue";
 :root:root {
   --van-cell-group-inset-radius: 0.25rem;
   --van-cell-radius: 0.25rem;
+  --van-cell-label-color: var(--van-primary-color);
+  --van-field-label-color: var(--van-primary-color);
   --van-cell-group-inset-padding: 1rem;
   --van-cell-vertical-padding: 1rem;
   --van-cell-horizontal-padding: 1.5rem;

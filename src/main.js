@@ -20,7 +20,8 @@ import {
     TimePicker,
     Calendar,
     Dialog,
-    Notify
+    Notify,
+    Empty
 } from "vant";
 
 // Import styles
@@ -33,23 +34,28 @@ import App from "./App.vue";
 const app = createApp(App);
 const pinia = createPinia();
 
-app.use(pinia);
-app.use(router);
+app
+    // Register Pinia state management
+    .use(pinia)
 
-// Register Vant components
-app.use(Button);
-app.use(Toast);
-app.use(Loading);
-app.use(Form);
-app.use(Field);
-app.use(Cell);
-app.use(CellGroup);
-app.use(Popup);
-app.use(PickerGroup);
-app.use(TimePicker);
-app.use(Calendar);
-app.use(Dialog);
-app.use(Notify);
+    // Register Vue Router instance
+    .use(router)
+
+    // Register Vant components
+    .use([Button])
+    .use(Toast)
+    .use(Loading)
+    .use(Form)
+    .use(Field)
+    .use(Cell)
+    .use(CellGroup)
+    .use(Popup)
+    .use(PickerGroup)
+    .use(TimePicker)
+    .use(Calendar)
+    .use(Dialog)
+    .use(Notify)
+    .use(Empty)
 
 
-app.mount("#app");
+    .mount("#app");
