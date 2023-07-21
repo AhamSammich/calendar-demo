@@ -42,7 +42,7 @@ app
     .use(router)
 
     // Register Vant components
-    .use([Button])
+    .use(Button)
     .use(Toast)
     .use(Loading)
     .use(Form)
